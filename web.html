@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Riverside Signaling Test</title>
+</head>
+
+<body>
+  <h2>Riverside Signaling Test</h2>
+  <button id="create">Create Room</button>
+  <button id="join">Join Room</button>
+
+  <script>
+    // Connect to your backend WebSocket server
+    const ws = new WebSocket("ws://localhost:5000");
+
+    ws.onopen = () => {
+      console.log("✅ Connected to signaling server");
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("📩 Message from server:", data);
+    };
+
+    ws.onclose = () => {
+      console.log("❌ Disconnected from server");
+    };
+
+    // Send 'create_room' message
+    document.getElementById("create").onclick = () => {
+      const roomId = "room-" + Math.floor(Math.random() * 10000);
+      ws.send(JSON.stringify({ type: "create_room", roomId }));
+      console.log("🟢 Sent create_room:", roomId);
+    };
+
+    // Send 'join_room' message
+    document.getElementById("join").onclick = () => {
+      const roomId = prompt("Enter room ID to join:");
+      ws.send(JSON.stringify({ type: "join_room", roomId }));
+      console.log("🟡 Sent join_room:", roomId);
+    };
+  </script>
+</body>
+
+</html>
